@@ -13,6 +13,9 @@ public class CarExample {
 		
 		myCar.speed = 60;
 		System.out.println("수정된 속도 : " + myCar.speed);
+		
+		myCar.color = "무지개";
+		System.out.println("수정된 색상 : " + myCar.color);
 
 	}
 
