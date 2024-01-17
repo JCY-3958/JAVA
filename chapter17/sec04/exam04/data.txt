@@ -1,0 +1,6 @@
+{pno: 1, name: 상품1, company: 자바회사, price: 708}
+{pno: 2, name: 상품2, company: 자바회사, price: 4179}
+{pno: 3, name: 상품3, company: 자바회사, price: 6438}
+{pno: 4, name: 상품4, company: 자바회사, price: 3144}
+{pno: 5, name: 상품5, company: 자바회사, price: 1516}
+{pno: 100, name: 덤밸 5kg, company: 헬스회사, price: 50000}
