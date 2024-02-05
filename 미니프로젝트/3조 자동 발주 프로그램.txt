@@ -1,0 +1,6 @@
+3조 프로젝트 제목 : 자동 발주 프로그램
+
+DB ID : minishop
+DB pw : 2m2w
+
+DB Name : Shopping
