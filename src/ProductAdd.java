@@ -1,5 +1,3 @@
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -9,20 +7,19 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JTextField;
 
-public class ProductAdd extends JFrame {
+//Dialog로 만들면 재고관리 창 제어 불가 가능하게 만들 수 있음
+public class ProductAdd extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private Connection conn;
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_1;
@@ -36,8 +33,9 @@ public class ProductAdd extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ProductAdd() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public ProductAdd(JFrame parent) {
+		super(parent, "품목 추가", true);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 윈도우 x를 눌러도 그 창만 꺼지게
 		setBounds(100, 100, 560, 330);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -164,16 +162,11 @@ public class ProductAdd extends JFrame {
 							textField_5.setText("");
 						} else {
 							try {
-								Class.forName("com.mysql.cj.jdbc.Driver");
-								conn = DriverManager.getConnection(
-										"jdbc:mysql://222.119.100.89:3382/shopping",
-										"minishop",
-										"2m2w"
-										);
+								DBConn.DBconnection();
 								
 								String sql1 = "" +
 										"select product from inventory";
-								PreparedStatement pstmt = conn.prepareStatement(sql1);
+								PreparedStatement pstmt = DBConn.conn.prepareStatement(sql1);
 								ResultSet rs = pstmt.executeQuery();
 								
 								//입력한 품목과 DB에 있는 품목 목록중에 같은 것이 있는지 검사
@@ -192,7 +185,7 @@ public class ProductAdd extends JFrame {
 											"insert into inventory (category, product, per_price, amount, auto_standard, order_amount) " +
 											"values(?, ?, ?, ?, ?, ?) ";
 									
-									PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+									PreparedStatement pstmt2 = DBConn.conn.prepareStatement(sql2);
 									pstmt2.setString(1, category);
 									pstmt2.setString(2, product);
 									pstmt2.setInt(3, per_price);
@@ -203,20 +196,19 @@ public class ProductAdd extends JFrame {
 									JOptionPane.showMessageDialog(ProductAdd.this,
 											"품목이 추가되었습니다.");	
 									
-									
 									//품목이 추가되면 재고화면의 table을 업데이트 해야함
-									
-									
+									InventoryPage inven = new InventoryPage();
+									inven.refreshTable();
 									dispose();
 								}
 								
 								pstmt.close();
-								conn.close();
+								DBConn.conn.close();
 								
 							} catch(Exception e1) {
 								e1.printStackTrace();
 								try {
-									conn.close();
+									DBConn.conn.close();
 								} catch (SQLException e2) {
 									e2.printStackTrace();
 								}

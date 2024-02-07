@@ -9,8 +9,6 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,7 +22,6 @@ public class ResetPassword extends JFrame {
 	private JPasswordField passwordField;
 	private JPasswordField passwordField_1;
 	private String password;
-	private Connection conn;
 
 	/**
 	 * Create the frame.
@@ -32,17 +29,12 @@ public class ResetPassword extends JFrame {
 	public ResetPassword() {
 		//창이 열리면 DB에서 비밀번호 가져옴
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://222.119.100.89:3382/shopping",
-					"minishop",
-					"2m2w"
-					);
+			DBConn.DBconnection();
 			
 			String sql = "" +
 					"select * from user";
 			
-			PreparedStatement pstmt = conn.prepareStatement(sql);
+			PreparedStatement pstmt = DBConn.conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			if(rs.next()) {
 				password = rs.getString("userinfo");
@@ -52,14 +44,14 @@ public class ResetPassword extends JFrame {
 						"테이블에 사용자가 없습니다.");
 			}
 			
-			conn.close();
+			DBConn.conn.close();
 			rs.close();
 			pstmt.close();
 			
 		} catch(Exception e1) {
 			e1.printStackTrace();
 			try {
-				conn.close();
+				DBConn.conn.close();
 			} catch (SQLException e2) {
 				e2.printStackTrace();
 			}
@@ -67,7 +59,7 @@ public class ResetPassword extends JFrame {
 		//---------------------------------------------------
 		
 		//기본 창 설정
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 윈도우 x를 눌러도 그 창만 꺼지게
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -117,28 +109,23 @@ public class ResetPassword extends JFrame {
 						//현재 비밀번호 일치 + 새 비빌번호 올바르게 입력 시 DB에 비밀번호 변경
 						if(!(password.equals(new String(passwordField_1.getPassword())))) { //현재 비밀번호와 새 비밀번호가 같지 않을 때 
 							try {
-								Class.forName("com.mysql.cj.jdbc.Driver");
-								conn = DriverManager.getConnection(
-										"jdbc:mysql://222.119.100.89:3382/shopping",
-										"minishop",
-										"2m2w"
-										);
+								DBConn.DBconnection();
 								
 								String sql = "" +
 										"update user set userinfo=? ";
 								
-								PreparedStatement pstmt = conn.prepareStatement(sql);
+								PreparedStatement pstmt = DBConn.conn.prepareStatement(sql);
 								pstmt.setString(1, new String(passwordField_1.getPassword()));
 								pstmt.executeUpdate();
 								System.out.println("DB에 비밀번호 수정 완료");
 								
-								conn.close();
+								DBConn.conn.close();
 								pstmt.close();
 								
 							} catch(Exception e1) {
 								e1.printStackTrace();
 								try {
-									conn.close();
+									DBConn.conn.close();
 								} catch (SQLException e2) {
 									e2.printStackTrace();
 								}

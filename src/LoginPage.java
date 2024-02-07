@@ -10,8 +10,6 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +20,6 @@ public class LoginPage extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPasswordField passwordField;
-	private Connection conn;
 
 	//프로그램 시작 부분
 	public static void main(String[] args) {
@@ -40,7 +37,7 @@ public class LoginPage extends JFrame {
 	
 	public LoginPage() {
 		//기본 구조, 제목 설정
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // 윈도우 x를 눌러도 그 창만 꺼지게
 		setBounds(100, 100, 560, 330);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -100,17 +97,12 @@ public class LoginPage extends JFrame {
 				//버튼 클릭 시 입력한 비밀번호와 DB에 있는 비빌번호가 일치하는지 확인
 				String inputPassword = new String(passwordField.getPassword());
 				try {
-					Class.forName("com.mysql.cj.jdbc.Driver");
-					conn = DriverManager.getConnection(
-							"jdbc:mysql://222.119.100.89:3382/shopping",
-							"minishop",
-							"2m2w"
-							);
+					DBConn.DBconnection();
 					
 					String sql = "" +
 							"select * from user";
 					
-					PreparedStatement pstmt = conn.prepareStatement(sql);
+					PreparedStatement pstmt = DBConn.conn.prepareStatement(sql);
 					ResultSet rs = pstmt.executeQuery();
 					if(rs.next()) {
 						String dbPassword = rs.getString("userinfo");
@@ -122,7 +114,7 @@ public class LoginPage extends JFrame {
 							mainPage.setVisible(true);
 							setVisible(false);
 							dispose();
-							conn.close();
+							DBConn.conn.close();
 						} else {
 							System.out.println("-----로그인 실패-----");
 							JOptionPane.showMessageDialog(LoginPage.this,
@@ -141,7 +133,7 @@ public class LoginPage extends JFrame {
 				} catch(Exception e1) {
 					e1.printStackTrace();
 					try {
-						conn.close();
+						DBConn.conn.close();
 					} catch (SQLException e2) {
 						e2.printStackTrace();
 					}
